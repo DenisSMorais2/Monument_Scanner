@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador QR - Monumentos Mindelo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .qr-card {
+            transition: all 0.3s ease;
+        }
+        .qr-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="container mx-auto max-w-4xl p-6">
+        <header class="gradient-bg text-white p-8 rounded-2xl mb-8 text-center">
+            <h1 class="text-3xl font-bold mb-2">
+                <i class="fas fa-qrcode mr-3"></i>
+                Gerador QR - Monumentos Mindelo
+            </h1>
+            <p class="opacity-90">Crie códigos QR para todos os monumentos históricos</p>
+        </header>
+
+        <!-- Custom QR Generator -->
+        <div class="bg-white p-6 rounded-2xl shadow-lg mb-8">
+            <h2 class="text-xl font-bold mb-4 text-gray-800">
+                <i class="fas fa-magic mr-2 text-blue-600"></i>
+                Gerador Personalizado
+            </h2>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Texto do QR Code:</label>
+                    <input id="qrText" type="text" placeholder="Ex: PALACIO_POVO_CV" 
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    
+                    <div class="mt-4 grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Tamanho:</label>
+                            <select id="qrSize" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                                <option value="200">200x200</option>
+                                <option value="300" selected>300x300</option>
+                                <option value="400">400x400</option>
+                                <option value="500">500x500</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Cor:</label>
+                            <input id="qrColor" type="color" value="#000000" 
+                                   class="w-full h-10 border border-gray-300 rounded-lg">
+                        </div>
+                    </div>
+                    
+                    <button id="generateBtn" class="w-full mt-4 bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition font-semibold">
+                        <i class="fas fa-cog mr-2"></i>
+                        Gerar QR Code
+                    </button>
+                </div>
+                
+                <div class="text-center">
+                    <div id="qrResult" class="border-2 border-dashed border-gray-300 rounded-lg p-8 min-h-64 flex items-center justify-center">
+                        <p class="text-gray-500">O QR Code aparecerá aqui</p>
+                    </div>
+                    <button id="downloadBtn" class="mt-4 bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition hidden">
+                        <i class="fas fa-download mr-2"></i>
+                        Baixar PNG
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pre-defined Monuments -->
+        <div class="bg-white p-6 rounded-2xl shadow-lg">
+            <h2 class="text-xl font-bold mb-6 text-gray-800">
+                <i class="fas fa-landmark mr-2 text-purple-600"></i>
+                QR Codes dos Monumentos de Mindelo
+            </h2>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6" id="monumentsGrid">
+                <!-- QR codes will be generated here -->
+            </div>
+            
+            <div class="mt-8 text-center">
+                <button id="downloadAllBtn" class="bg-purple-600 text-white px-8 py-3 rounded-lg hover:bg-purple-700 transition font-semibold">
+                    <i class="fas fa-download mr-2"></i>
+                    Baixar Todos os QR Codes
+                </button>
+            </div>
+        </div>
+
+        <!-- Instructions -->
+        <div class="bg-blue-50 p-6 rounded-2xl mt-8">
+            <h3 class="text-lg font-bold text-blue-800 mb-4">
+                <i class="fas fa-info-circle mr-2"></i>
+                Como Usar os QR Codes:
+            </h3>
+            <ul class="text-blue-700 space-y-2">
+                <li><i class="fas fa-check mr-2"></i> Imprima os QR codes em papel resistente à água</li>
+                <li><i class="fas fa-check mr-2"></i> Cole-os próximo aos monumentos (com permissão)</li>
+                <li><i class="fas fa-check mr-2"></i> Teste sempre com o app antes de instalar</li>
+                <li><i class="fas fa-check mr-2"></i> Use materiais duráveis para ambiente externo</li>
+                <li><i class="fas fa-check mr-2"></i> Posicione a 1,5m de altura para fácil acesso</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        const monuments = [
+            { id: 1, name: "Palácio do Povo", code: "PALACIO_POVO_CV" },
+            { id: 2, name: "Farol de D. Amélia", code: "FAROL_DONA_AMELIA_CV" },
+            { id: 3, name: "Mercado Municipal", code: "MERCADO_MUNICIPAL_CV" },
+            { id: 4, name: "Igreja Nossa Senhora da Luz", code: "IGREJA_NSA_LUZ_CV" },
+            { id: 5, name: "Torre de Belém (Réplica)", code: "TORRE_BELEM_CV" },
+            { id: 6, name: "Edifício da Alfândega", code: "ALFANDEGA_CV" },
+            { id: 7, name: "Casa da Morna", code: "CASA_MORNA_CV" },
+            { id: 8, name: "Praça Nova", code: "PRACA_NOVA_CV" },
+            { id: 9, name: "Centro Nacional de Artesanato", code: "ARTESANATO_CV" },
+            { id: 10, name: "Casa da Cultura", code: "CASA_CULTURA_CV" },
+            { id: 11, name: "Porto de Mindelo", code: "PORTO_MINDELO_CV" },
+            { id: 12, name: "Fortim d'El Rei", code: "FORTIM_EL_REI_CV" }
+        ];
+
+        let allQRCodes = [];
+
+        // Generate custom QR code
+        document.getElementById('generateBtn').addEventListener('click', function() {
+            const text = document.getElementById('qrText').value.trim();
+            const size = parseInt(document.getElementById('qrSize').value);
+            const color = document.getElementById('qrColor').value;
+            
+            if (!text) {
+                alert('Por favor, digite o texto para o QR Code');
+                return;
+            }
+            
+            generateQRCode(text, size, color, 'qrResult', true);
+        });
+
+        // Generate QR code function
+        function generateQRCode(text, size = 300, color = '#000000', containerId, showDownload = false) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            
+            try {
+                // Create QR code using QRious library
+                const canvas = document.createElement('canvas');
+                const qr = new QRious({
+                    element: canvas,
+                    value: text,
+                    size: size,
+                    foreground: color,
+                    background: '#FFFFFF',
+                    level: 'M'
+                });
+                
+                container.appendChild(canvas);
+                canvas.className = 'mx-auto rounded-lg shadow-lg border border-gray-200';
+                
+                if (showDownload) {
+                    document.getElementById('downloadBtn').classList.remove('hidden');
+                    document.getElementById('downloadBtn').onclick = () => downloadCanvas(canvas, text);
+                }
+                
+                return canvas;
+            } catch (error) {
+                console.error('Erro ao gerar QR Code:', error);
+                container.innerHTML = '<p class="text-red-500">Erro ao gerar QR Code</p>';
+                return null;
+            }
+        }
+
+        // Download canvas as PNG
+        function downloadCanvas(canvas, filename = 'qrcode') {
+            const link = document.createElement('a');
+            link.download = `${filename}.png`;
+            link.href = canvas.toDataURL();
+            link.click();
+        }
+
+        // Generate all monument QR codes
+        function generateAllMonuments() {
+            const grid = document.getElementById('monumentsGrid');
+            grid.innerHTML = '';
+            allQRCodes = [];
+            
+            monuments.forEach(monument => {
+                const card = document.createElement('div');
+                card.className = 'qr-card bg-gray-50 p-4 rounded-xl border border-gray-200';
+                card.innerHTML = `
+                    <div class="text-center mb-3">
+                        <h3 class="font-bold text-gray-800 text-sm">${monument.name}</h3>
+                        <p class="text-xs text-gray-600 font-mono">${monument.code}</p>
+                    </div>
+                    <div id="qr-${monument.id}" class="mb-3 flex justify-center">
+                        <!-- QR code will be generated here -->
+                    </div>
+                    <button onclick="downloadMonumentQR(${monument.id}, '${monument.code}')" 
+                            class="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition text-sm">
+                        <i class="fas fa-download mr-1"></i>
+                        Baixar
+                    </button>
+                `;
+                grid.appendChild(card);
+                
+                // Generate QR code for this monument
+                const canvas = generateQRCodeForMonument(monument.code, `qr-${monument.id}`);
+                allQRCodes.push({ canvas, name: monument.code });
+            });
+        }
+
+        function generateQRCodeForMonument(text, containerId) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            
+            try {
+                const canvas = document.createElement('canvas');
+                const qr = new QRious({
+                    element: canvas,
+                    value: text,
+                    size: 200,
+                    foreground: '#000000',
+                    background: '#FFFFFF',
+                    level: 'M'
+                });
+                
+                container.appendChild(canvas);
+                canvas.className = 'rounded-lg shadow-md border border-gray-100';
+                
+                return canvas;
+            } catch (error) {
+                console.error('Erro ao gerar QR Code do monumento:', error);
+                container.innerHTML = '<p class="text-red-500 text-xs">Erro</p>';
+                return null;
+            }
+        }
+
+        // Download individual monument QR
+        function downloadMonumentQR(id, code) {
+            const canvas = document.querySelector(`#qr-${id} canvas`);
+            if (canvas) {
+                downloadCanvas(canvas, code);
+            }
+        }
+
+        // Download all QR codes as ZIP (simplified - downloads one by one)
+        document.getElementById('downloadAllBtn').addEventListener('click', function() {
+            if (allQRCodes.length === 0) {
+                alert('Primeiro gere os QR codes!');
+                return;
+            }
+            
+            let downloaded = 0;
+            allQRCodes.forEach((qr, index) => {
+                setTimeout(() => {
+                    downloadCanvas(qr.canvas, qr.name);
+                    downloaded++;
+                    if (downloaded === allQRCodes.length) {
+                        alert('Todos os QR codes foram baixados!');
+                    }
+                }, index * 500); // Delay between downloads
+            });
+        });
+
+        // Initialize
+        generateAllMonuments();
+    </script>
+</body>
+</html>

@@ -12,7 +12,7 @@
                     points: 50,
                     lat: 16.8909,
                     lng: -24.9878,
-                    image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop",
+                    image: "imagens/palacio_do_povo.jpg",
                     qrCode: "PALACIO_POVO_CV"
                 },
                 {
