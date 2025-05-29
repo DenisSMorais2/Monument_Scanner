@@ -1,4 +1,4 @@
-        // App state
+  // App state
         const state = {
             user: null,
             points: 0,
@@ -62,7 +62,7 @@
                     points: 30,
                     lat: 16.8876,
                     lng: -24.9859,
-                    image: "imagens/edificio_alfandega.jpeg",
+                    image: "imagens/edificio_alfandega.jpg",
                     qrCode: "ALFANDEGA_CV"
                 },
                 {
@@ -102,7 +102,7 @@
                     points: 40,
                     lat: 16.8918,
                     lng: -24.9874,
-                    image: "imagens/casa_da_cultura.png",
+                    image: "imagens/casa_da_cultura.jpg",
                     qrCode: "CASA_CULTURA_CV"
                 },
                 {
@@ -232,6 +232,22 @@
         const badgeDescription = document.getElementById('badgeDescription');
         const badgeMessage = document.getElementById('badgeMessage');
         const closeBadgeModal = document.getElementById('closeBadgeModal');
+
+        // Achievement modal elements
+        const achievementModal = document.getElementById('achievementModal');
+        const achievementIcon = document.getElementById('achievementIcon');
+        const achievementTitle = document.getElementById('achievementTitle');
+        const achievementDescription = document.getElementById('achievementDescription');
+        const achievementMessage = document.getElementById('achievementMessage');
+        const closeAchievementModal = document.getElementById('closeAchievementModal');
+
+        // Monument modal elements
+        const monumentModal = document.getElementById('monumentModal');
+        const monumentModalImage = document.getElementById('monumentModalImage');
+        const monumentModalName = document.getElementById('monumentModalName');
+        const monumentModalDescription = document.getElementById('monumentModalDescription');
+        const monumentModalPoints = document.getElementById('monumentModalPoints');
+        const closeMonumentModal = document.getElementById('closeMonumentModal');
 
         // Initialize map
         let map;
@@ -533,6 +549,10 @@
             pointsEarned.textContent = monument.points;
             monumentImage.src = monument.image;
             monumentImage.alt = monument.name;
+            monumentImage.onerror = function() {
+                this.src = 'imagens/placeholder.jpg';
+                this.onerror = null;
+            };
             
             // Update UI and save data
             updateProgress();
@@ -618,14 +638,53 @@
             badgeModal.classList.add('hidden');
         }
 
+        function showAchievementDetails(badge) {
+            achievementIcon.className = `w-20 h-20 mx-auto rounded-full flex items-center justify-center mb-4 ${badge.color}`;
+            achievementIcon.innerHTML = `<i class="${badge.icon} ${badge.iconColor} text-3xl"></i>`;
+            
+            achievementTitle.textContent = badge.name;
+            achievementDescription.textContent = badge.description;
+            achievementMessage.textContent = badge.message;
+            
+            achievementModal.classList.remove('hidden');
+        }
+
+        function closeAchievementDetails() {
+            achievementModal.classList.add('hidden');
+        }
+
+        function showMonumentDetails(monument) {
+            monumentModalImage.src = monument.image;
+            monumentModalImage.alt = monument.name;
+            monumentModalImage.onerror = function() {
+                this.src = 'imagens/placeholder.jpg';
+                this.onerror = null;
+            };
+            
+            monumentModalName.textContent = monument.name;
+            monumentModalDescription.textContent = monument.description;
+            monumentModalPoints.textContent = `+${monument.points}`;
+            
+            monumentModal.classList.remove('hidden');
+        }
+
+        function closeMonumentDetails() {
+            monumentModal.classList.add('hidden');
+        }
+
         function renderBadges() {
             badgesContainer.innerHTML = '';
             
             state.badges.forEach(badge => {
                 const badgeElement = document.createElement('div');
-                badgeElement.className = `flex flex-col items-center ${badge.unlocked ? '' : 'opacity-40'}`;
+                badgeElement.className = `flex flex-col items-center ${badge.unlocked ? 'cursor-pointer' : 'opacity-40'}`;
+                
+                if (badge.unlocked) {
+                    badgeElement.addEventListener('click', () => showAchievementDetails(badge));
+                }
+                
                 badgeElement.innerHTML = `
-                    <div class="w-14 h-14 ${badge.color} rounded-full flex items-center justify-center mb-2 ${badge.unlocked ? 'badge-animation shadow-lg' : ''}">
+                    <div class="w-14 h-14 ${badge.color} rounded-full flex items-center justify-center mb-2 ${badge.unlocked ? 'badge-animation shadow-lg hover:scale-105 transition-transform' : ''}">
                         <i class="${badge.icon} ${badge.iconColor} text-xl"></i>
                     </div>
                     <span class="text-xs text-center font-medium text-gray-600">${badge.threshold}%</span>
@@ -644,17 +703,23 @@
             discoveredMonumentsList.innerHTML = '';
             state.scannedMonuments.forEach(monument => {
                 const monumentElement = document.createElement('div');
-                monumentElement.className = 'monument-card bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-xl shadow-sm border border-blue-100';
+                monumentElement.className = 'monument-card bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-xl shadow-sm border border-blue-100 cursor-pointer hover:shadow-md transition-all';
+                
+                monumentElement.addEventListener('click', () => showMonumentDetails(monument));
+                
                 monumentElement.innerHTML = `
                     <div class="flex items-center">
-                        <img src="${monument.image}" alt="${monument.name}" class="w-16 h-16 object-cover rounded-lg mr-4">
+                        <img src="${monument.image}" alt="${monument.name}" 
+                             class="w-16 h-16 object-cover rounded-lg mr-4"
+                             onerror="this.src='imagens/placeholder.jpg'; this.onerror=null;">
                         <div class="flex-1">
                             <h4 class="font-bold text-gray-800">${monument.name}</h4>
-                            <p class="text-xs text-gray-600 mt-1">${monument.description}</p>
+                            <p class="text-xs text-gray-600 mt-1 line-clamp-2">${monument.description.substring(0, 80)}...</p>
                         </div>
                         <div class="text-center">
                             <div class="text-green-600 font-bold text-lg">+${monument.points}</div>
                             <div class="text-xs text-gray-500">pontos</div>
+                            <i class="fas fa-chevron-right text-gray-400 text-xs mt-1"></i>
                         </div>
                     </div>
                 `;
@@ -670,9 +735,10 @@
                 monumentElement.className = `monument-card ${isScanned ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200'} p-4 rounded-xl border`;
                 monumentElement.innerHTML = `
                     <div class="flex items-center">
-                        <img src="${isScanned ? monument.image : 'https://images.unsplash.com/photo-1584464491033-06628f3a6b7b?w=64&h=64&fit=crop'}" 
+                        <img src="${isScanned ? monument.image : 'imagens/placeholder.jpg'}" 
                              alt="${monument.name}" 
-                             class="w-12 h-12 object-cover rounded-lg mr-3 ${isScanned ? '' : 'opacity-40'}">
+                             class="w-12 h-12 object-cover rounded-lg mr-3 ${isScanned ? '' : 'opacity-40'}"
+                             onerror="this.src='imagens/placeholder.jpg'; this.onerror=null;">
                         <div class="flex-1">
                             <h4 class="font-semibold text-gray-800">${monument.name}</h4>
                             <p class="text-xs text-gray-600 mt-1">${isScanned ? monument.description : 'Escaneie o QR Code para descobrir'}</p>
@@ -739,6 +805,8 @@
         profileBtn.addEventListener('click', showProfileView);
         mapBtn.addEventListener('click', showMapView);
         closeBadgeModal.addEventListener('click', closeBadge);
+        closeAchievementModal.addEventListener('click', closeAchievementDetails);
+        closeMonumentModal.addEventListener('click', closeMonumentDetails);
         
         changePhotoBtn.addEventListener('click', changePhoto);
         photoInput.addEventListener('change', handlePhotoChange);
