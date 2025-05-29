@@ -22,7 +22,7 @@
                     points: 40,
                     lat: 16.8925,
                     lng: -24.9892,
-                    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=300&fit=crop",
+                    image: "imagens/farol_dona_amelia.jpg",
                     qrCode: "FAROL_DONA_AMELIA_CV"
                 },
                 {
@@ -32,7 +32,7 @@
                     points: 30,
                     lat: 16.8883,
                     lng: -24.9847,
-                    image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=400&h=300&fit=crop",
+                    image: "imagens/mercado_municipal.jpg",
                     qrCode: "MERCADO_MUNICIPAL_CV"
                 },
                 {
@@ -42,7 +42,7 @@
                     points: 45,
                     lat: 16.8912,
                     lng: -24.9865,
-                    image: "https://images.unsplash.com/photo-1548625361-6a4b726b5db2?w=400&h=300&fit=crop",
+                    image: "imagens/igreja_nossa_senhora_luz.jpg",
                     qrCode: "IGREJA_NSA_LUZ_CV"
                 },
                 {
@@ -52,7 +52,7 @@
                     points: 35,
                     lat: 16.8931,
                     lng: -24.9883,
-                    image: "https://images.unsplash.com/photo-1555881400-74d7acaacd8b?w=400&h=300&fit=crop",
+                    image: "imagens/torre_belem.jpg",
                     qrCode: "TORRE_BELEM_CV"
                 },
                 {
@@ -62,7 +62,7 @@
                     points: 30,
                     lat: 16.8876,
                     lng: -24.9859,
-                    image: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=400&h=300&fit=crop",
+                    image: "imagens/edificio_alfandega.jpeg",
                     qrCode: "ALFANDEGA_CV"
                 },
                 {
@@ -72,7 +72,7 @@
                     points: 40,
                     lat: 16.8902,
                     lng: -24.9871,
-                    image: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=300&fit=crop",
+                    image: "imagens/casa_da_morna.jpg",
                     qrCode: "CASA_MORNA_CV"
                 },
                 {
@@ -82,7 +82,7 @@
                     points: 25,
                     lat: 16.8895,
                     lng: -24.9868,
-                    image: "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=400&h=300&fit=crop",
+                    image: "imagens/praca_nova.jpg",
                     qrCode: "PRACA_NOVA_CV"
                 },
                 {
@@ -92,7 +92,7 @@
                     points: 35,
                     lat: 16.8928,
                     lng: -24.9886,
-                    image: "https://images.unsplash.com/photo-1582555172866-f73bb12a2ab3?w=400&h=300&fit=crop",
+                    image: "imagens/centro_artesanato.jpg",
                     qrCode: "ARTESANATO_CV"
                 },
                 {
@@ -102,7 +102,7 @@
                     points: 40,
                     lat: 16.8918,
                     lng: -24.9874,
-                    image: "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=400&h=300&fit=crop",
+                    image: "imagens/casa_da_cultura.png",
                     qrCode: "CASA_CULTURA_CV"
                 },
                 {
@@ -112,7 +112,7 @@
                     points: 50,
                     lat: 16.8867,
                     lng: -24.9839,
-                    image: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=400&h=300&fit=crop",
+                    image: "imagens/porto_mindelo.jpg",
                     qrCode: "PORTO_MINDELO_CV"
                 },
                 {
@@ -122,7 +122,7 @@
                     points: 45,
                     lat: 16.8942,
                     lng: -24.9895,
-                    image: "https://images.unsplash.com/photo-1520637836862-4d197d17c91a?w=400&h=300&fit=crop",
+                    image: "imagens/fortim_el_rei.jpg",
                     qrCode: "FORTIM_EL_REI_CV"
                 }
             ],
