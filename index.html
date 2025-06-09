@@ -8,10 +8,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
     <script src="https://unpkg.com/qr-scanner@1.4.2/qr-scanner.umd.min.js"></script>
-    <link rel="stylesheet" href="styles.css">
+     <link rel="stylesheet" href="styles.css">
 </head>
 <body class="bg-gradient-to-br from-blue-50 to-indigo-100 font-sans">
     <div class="container mx-auto max-w-md bg-white min-h-screen shadow-2xl relative">
@@ -94,8 +92,8 @@
 
         <!-- Main App -->
         <div id="mainApp" class="hidden min-h-screen pb-20">
-            <!-- Fixed Header -->
-            <header class="fixed top-0 w-full max-w-md gradient-bg text-white p-4 rounded-b-2xl shadow-lg z-40">
+            <!-- Header -->
+            <header class="gradient-bg text-white p-4 rounded-b-2xl shadow-lg">
                 <div class="flex justify-between items-center">
                     <div>
                         <h1 class="text-2xl font-bold">Heritage Hunt CV</h1>
@@ -116,20 +114,20 @@
             </header>
 
             <!-- Main Content Area -->
-            <main class="pt-24 p-4">
+            <main class="p-4">
                 <!-- Scanner View (default) -->
                 <div id="scannerView">
-                    <div class="scanner-container bg-gray-900 rounded-2xl overflow-hidden relative shadow-2xl" style="height: 450px;">
+                    <div class="bg-gray-900 rounded-2xl overflow-hidden relative shadow-2xl" style="height: 450px;">
                         <video id="scannerVideo" class="w-full h-full object-cover" autoplay playsinline></video>
-                        <div id="scannerOverlay" class="scanner-overlay-frame hidden">
+                        <div id="scannerOverlay" class="scanner-overlay hidden">
+                            <button id="closeScannerBtn" class="scanner-close-btn w-10 h-10 bg-red-500 rounded-full flex items-center justify-center text-white hover:bg-red-600 transition">
+                                <i class="fas fa-times"></i>
+                            </button>
                             <div class="text-center">
                                 <div class="scanner-frame mb-6">
                                     <div class="scanner-line"></div>
                                 </div>
                                 <p class="text-white text-lg font-semibold">Procurando por QR Code...</p>
-                                <button id="closeScannerBtn" class="mt-4 bg-red-500 text-white px-6 py-2 rounded-xl hover:bg-red-600 transition">
-                                    <i class="fas fa-times mr-2"></i>Fechar Scanner
-                                </button>
                             </div>
                         </div>
                         <div id="scannerResult" class="scanner-overlay hidden">
@@ -221,15 +219,43 @@
 
                 <!-- Map View -->
                 <div id="mapView" class="hidden space-y-6">
-                    <div class="bg-white p-4 rounded-2xl shadow-lg">
+                    <div class="bg-white p-4 rounded-2xl shadow-lg relative">
                         <div class="flex justify-between items-center mb-4">
                             <h3 class="text-lg font-bold text-gray-800">Mapa de Mindelo</h3>
-                            <button id="locateBtn" class="btn-primary text-white px-4 py-2 rounded-lg text-sm flex items-center">
-                                <i class="fas fa-location-crosshairs mr-2"></i>
-                                Minha Localização
-                            </button>
+                            <div class="flex space-x-2">
+                                <button id="findMyLocationBtn" class="bg-blue-500 text-white px-3 py-2 rounded-lg text-sm hover:bg-blue-600 transition">
+                                    <i class="fas fa-location-arrow mr-1"></i> Minha Localização
+                                </button>
+                                <button id="clearRouteBtn" class="bg-red-500 text-white px-3 py-2 rounded-lg text-sm hover:bg-red-600 transition hidden">
+                                    <i class="fas fa-times mr-1"></i> Limpar Rota
+                                </button>
+                            </div>
                         </div>
-                        <div id="map"></div>
+                        <div class="relative">
+                            <div id="map" class="rounded-xl overflow-hidden"></div>
+                            
+                            <!-- User Location Info Panel -->
+                            <div id="userLocationInfo" class="user-location-info hidden">
+                                <div class="flex items-center mb-2">
+                                    <div class="w-3 h-3 bg-blue-500 rounded-full mr-2 animate-pulse"></div>
+                                    <span class="text-sm font-semibold text-gray-800">Sua Localização</span>
+                                </div>
+                                <div class="text-xs text-gray-600 space-y-1">
+                                    <div id="userCoordinates">
+                                        <i class="fas fa-map-marker-alt mr-1"></i>
+                                        <span id="userLatLng">Buscando...</span>
+                                    </div>
+                                    <div id="userAccuracy" class="hidden">
+                                        <i class="fas fa-crosshairs mr-1"></i>
+                                        Precisão: <span id="accuracyValue">-</span>m
+                                    </div>
+                                </div>
+                                <button id="centerOnUserBtn" class="mt-2 w-full bg-blue-500 text-white text-xs py-1 px-2 rounded hover:bg-blue-600 transition">
+                                    <i class="fas fa-crosshairs mr-1"></i>
+                                    Centralizar
+                                </button>
+                            </div>
+                        </div>
                     </div>
                     <div class="bg-white p-6 rounded-2xl shadow-lg">
                         <h3 class="text-lg font-bold mb-4 text-gray-800">Monumentos de Mindelo</h3>
@@ -241,7 +267,7 @@
             </main>
 
             <!-- Navigation -->
-            <nav class="fixed bottom-0 w-full max-w-md bg-white border-t border-gray-100 shadow-lg z-30">
+            <nav class="fixed bottom-0 w-full max-w-md bg-white border-t border-gray-100 shadow-lg">
                 <div class="flex justify-around p-2">
                     <button id="navScanner" class="p-4 text-blue-600 flex flex-col items-center transition-all">
                         <i class="fas fa-qrcode text-xl"></i>
@@ -300,7 +326,7 @@
         </div>
 
         <!-- Monument Details Modal -->
-        <div id="monumentModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-60 hidden">
+        <div id="monumentModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
             <div class="bg-white rounded-2xl max-w-sm mx-4 modal-animation shadow-2xl overflow-hidden">
                 <div class="relative">
                     <img id="monumentModalImage" src="" alt="" class="w-full h-48 object-cover">
@@ -317,32 +343,54 @@
                             <div class="text-lg font-bold text-blue-600" id="monumentModalPoints">+0</div>
                             <p class="text-xs text-gray-600">Pontos</p>
                         </div>
-                        <div class="bg-green-50 p-3 rounded-lg text-center cursor-pointer hover:bg-green-100 transition" id="showLocationBtn">
+                        <div class="bg-green-50 p-3 rounded-lg text-center">
                             <div class="text-lg font-bold text-green-600">
                                 <i class="fas fa-map-marker-alt"></i>
                             </div>
-                            <p class="text-xs text-gray-600">Ver no Mapa</p>
+                            <p class="text-xs text-gray-600">Localização</p>
                         </div>
                     </div>
                     
-                    <div class="bg-green-50 border border-green-200 p-3 rounded-lg mb-4">
-                        <div class="flex items-center text-green-700">
-                            <i class="fas fa-check-circle mr-2"></i>
-                            <span class="font-semibold">Monumento Descoberto!</span>
+                    <div class="space-y-3">
+                        <div id="monumentStatus" class="bg-green-50 border border-green-200 p-3 rounded-lg">
+                            <div class="flex items-center text-green-700">
+                                <i class="fas fa-check-circle mr-2"></i>
+                                <span class="font-semibold">Monumento Descoberto!</span>
+                            </div>
+                            <p class="text-xs text-green-600 mt-1" id="monumentDiscoveryDate">Descoberto em sua jornada</p>
                         </div>
-                        <p class="text-xs text-green-600 mt-1" id="monumentDiscoveryDate">Descoberto em sua jornada</p>
+                        
+                        <button id="viewOnMapBtn" class="w-full bg-blue-500 text-white py-3 rounded-xl font-semibold hover:bg-blue-600 transition flex items-center justify-center">
+                            <i class="fas fa-map-marker-alt mr-2"></i>
+                            Ver no Mapa
+                        </button>
                     </div>
-
-                    <button id="getDirectionsBtn" class="w-full btn-primary text-white py-3 rounded-xl font-semibold flex items-center justify-center">
-                        <i class="fas fa-route mr-2"></i>
-                        Traçar Rota
-                    </button>
                 </div>
             </div>
         </div>
 
-        <!-- Map Monument Details Modal -->
-        <div id="mapMonumentModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-60 hidden">
+        <!-- Route Planning Modal -->
+        <div id="routePlanModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+            <div class="bg-white rounded-2xl max-w-sm mx-4 modal-animation shadow-2xl">
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-bold text-gray-800">Planejar Rota</h3>
+                        <button id="closeRoutePlanModal" class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-gray-600 hover:bg-gray-200 transition">
+                            <i class="fas fa-times text-sm"></i>
+                        </button>
+                    </div>
+                    
+                    <p class="text-gray-600 mb-4">Escolha um monumento ainda não descoberto para traçar a melhor rota:</p>
+                    
+                    <div id="availableMonumentsList" class="space-y-3 max-h-64 overflow-y-auto">
+                        <!-- Available monuments will be added here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Monument Info Modal for Map -->
+        <div id="mapMonumentModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
             <div class="bg-white rounded-2xl max-w-sm mx-4 modal-animation shadow-2xl overflow-hidden">
                 <div class="relative">
                     <img id="mapMonumentImage" src="" alt="" class="w-full h-48 object-cover">
@@ -359,22 +407,28 @@
                             <div class="text-lg font-bold text-blue-600" id="mapMonumentPoints">+0</div>
                             <p class="text-xs text-gray-600">Pontos</p>
                         </div>
-                        <div class="bg-purple-50 p-3 rounded-lg text-center" id="mapMonumentStatus">
+                        <div class="bg-purple-50 p-3 rounded-lg text-center">
                             <div class="text-lg font-bold text-purple-600">
-                                <i class="fas fa-lock"></i>
+                                <i class="fas fa-route"></i>
                             </div>
-                            <p class="text-xs text-gray-600">Não Descoberto</p>
+                            <p class="text-xs text-gray-600">Navegar</p>
                         </div>
                     </div>
-
-                    <button id="mapGetDirectionsBtn" class="w-full btn-primary text-white py-3 rounded-xl font-semibold flex items-center justify-center">
-                        <i class="fas fa-route mr-2"></i>
-                        Traçar Rota
-                    </button>
+                    
+                    <div id="mapMonumentStatus" class="mb-4">
+                        <!-- Status will be added dynamically -->
+                    </div>
+                    
+                    <div class="space-y-3">
+                        <button id="planRouteToMonumentBtn" class="w-full bg-purple-500 text-white py-3 rounded-xl font-semibold hover:bg-purple-600 transition flex items-center justify-center">
+                            <i class="fas fa-route mr-2"></i>
+                            Traçar Rota
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-    <script src="script.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
