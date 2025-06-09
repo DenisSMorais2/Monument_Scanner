@@ -52,6 +52,12 @@
     justify-content: center;
     align-items: center;
     pointer-events: none;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(69, 190, 255, 0.2));
+    backdrop-filter: blur(2px);
+}
+
+.scanner-overlay-frame button {
+    pointer-events: auto;
 }
 
 .scanner-frame {
@@ -174,6 +180,7 @@
     background: white;
     border-radius: 8px;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    z-index: 20 !important;
 }
 
 .leaflet-routing-container h2 {
@@ -183,6 +190,28 @@
     padding: 10px;
     border-radius: 8px 8px 0 0;
     font-size: 14px;
+}
+
+/* Modal z-index fix */
+.z-60 {
+    z-index: 60;
+}
+
+/* Ensure modals are above map controls */
+#badgeModal,
+#achievementModal,
+#monumentModal,
+#mapMonumentModal {
+    z-index: 10000 !important;
+}
+
+/* Map popup z-index */
+.leaflet-popup {
+    z-index: 1000 !important;
+}
+
+.leaflet-popup-pane {
+    z-index: 1000 !important;
 }
 
 /* Responsive adjustments */
@@ -235,4 +264,46 @@
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: #1D4ED8;
+}
+
+/* Monument list improvements */
+.monument-card {
+    border-width: 2px;
+}
+
+.monument-card:hover {
+    border-color: #3B82F6;
+}
+
+/* Close scanner button styles */
+#closeScannerBtn {
+    background: #EF4444;
+    transition: all 0.3s ease;
+}
+
+#closeScannerBtn:hover {
+    background: #DC2626;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3);
+}
+
+/* Enhanced modal backdrop */
+.fixed.inset-0.bg-black.bg-opacity-50 {
+    backdrop-filter: blur(4px);
+}
+
+/* Ensure proper stacking order */
+.leaflet-control-container {
+    z-index: 30 !important;
+}
+
+.leaflet-top,
+.leaflet-bottom {
+    z-index: 30 !important;
+}
+
+/* Scanner overlay improvements */
+.scanner-overlay-frame .text-center {
+    position: relative;
+    z-index: 15;
 }

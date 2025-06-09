@@ -197,6 +197,7 @@ const scannerVideo = document.getElementById('scannerVideo');
 const scannerOverlay = document.getElementById('scannerOverlay');
 const scannerResult = document.getElementById('scannerResult');
 const closeResultBtn = document.getElementById('closeResultBtn');
+const closeScannerBtn = document.getElementById('closeScannerBtn');
 const scannedMonumentName = document.getElementById('scannedMonumentName');
 const scannedMonumentDesc = document.getElementById('scannedMonumentDesc');
 const pointsEarned = document.getElementById('pointsEarned');
@@ -269,6 +270,14 @@ const mapGetDirectionsBtn = document.getElementById('mapGetDirectionsBtn');
 let map;
 let markers = [];
 let userLocationMarker = null;
+
+// Function to close all modals
+function closeAllModals() {
+    badgeModal.classList.add('hidden');
+    achievementModal.classList.add('hidden');
+    monumentModal.classList.add('hidden');
+    mapMonumentModal.classList.add('hidden');
+}
 
 function initMap() {
     if (map) return;
@@ -379,10 +388,47 @@ function getUserLocation() {
 
 function getDirections(monument) {
     if (!state.userLocation) {
-        alert('Por favor, primeiro obtenha sua localização clicando em "Minha Localização"');
+        // Try to get user location first
+        if (!navigator.geolocation) {
+            alert('Geolocalização não é suportada pelo seu navegador. Por favor, clique em "Minha Localização" primeiro.');
+            return;
+        }
+
+        // Get user location and then create directions
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+                state.userLocation = { lat, lng };
+                
+                if (userLocationMarker) {
+                    map.removeLayer(userLocationMarker);
+                }
+                
+                userLocationMarker = L.marker([lat, lng], {
+                    icon: L.icon({
+                        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
+                        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+                        iconSize: [25, 41],
+                        iconAnchor: [12, 41],
+                        popupAnchor: [1, -34],
+                        shadowSize: [41, 41]
+                    })
+                }).addTo(map);
+                
+                createRoute(monument);
+            },
+            (error) => {
+                alert('Não foi possível obter sua localização. Por favor, clique em "Minha Localização" primeiro.');
+            }
+        );
         return;
     }
 
+    createRoute(monument);
+}
+
+function createRoute(monument) {
     if (state.routingControl) {
         map.removeControl(state.routingControl);
     }
@@ -403,8 +449,7 @@ function getDirections(monument) {
     }).addTo(map);
 
     // Close modals and switch to map view
-    monumentModal.classList.add('hidden');
-    mapMonumentModal.classList.add('hidden');
+    closeAllModals();
     showMapView();
 }
 
@@ -559,6 +604,7 @@ function showScannerView() {
     scannerView.classList.remove('hidden');
     profileView.classList.add('hidden');
     mapView.classList.add('hidden');
+    closeAllModals();
     updateNavButtons('scanner');
 }
 
@@ -566,6 +612,7 @@ function showProfileView() {
     scannerView.classList.add('hidden');
     profileView.classList.remove('hidden');
     mapView.classList.add('hidden');
+    closeAllModals();
     updateProfileView();
     updateNavButtons('profile');
 }
@@ -574,6 +621,7 @@ function showMapView() {
     scannerView.classList.add('hidden');
     profileView.classList.add('hidden');
     mapView.classList.remove('hidden');
+    closeAllModals();
     initMap();
     updateNavButtons('map');
     setTimeout(() => {
@@ -694,6 +742,11 @@ function resetScanner() {
     stopScanner();
 }
 
+function closeScanner() {
+    stopScanner();
+    resetScanner();
+}
+
 function closeResult() {
     scannerResult.classList.add('hidden');
     resetScanner();
@@ -739,6 +792,7 @@ function checkForBadges() {
 }
 
 function showBadge(badge) {
+    closeAllModals();
     badgeIcon.className = `w-24 h-24 mx-auto rounded-full flex items-center justify-center mb-6 badge-animation ${badge.color}`;
     badgeIcon.innerHTML = `<i class="${badge.icon} ${badge.iconColor} text-4xl"></i>`;
     
@@ -754,6 +808,7 @@ function closeBadge() {
 }
 
 function showAchievementDetails(badge) {
+    closeAllModals();
     achievementIcon.className = `w-20 h-20 mx-auto rounded-full flex items-center justify-center mb-4 ${badge.color}`;
     achievementIcon.innerHTML = `<i class="${badge.icon} ${badge.iconColor} text-3xl"></i>`;
     
@@ -769,6 +824,7 @@ function closeAchievementDetails() {
 }
 
 function showMonumentDetails(monument) {
+    closeAllModals();
     monumentModalImage.src = monument.image;
     monumentModalImage.alt = monument.name;
     monumentModalImage.onerror = function() {
@@ -786,7 +842,7 @@ function showMonumentDetails(monument) {
 }
 
 function showLocationOnMap(monument) {
-    monumentModal.classList.add('hidden');
+    closeAllModals();
     showMapView();
     
     // Center map on monument
@@ -804,6 +860,8 @@ function showLocationOnMap(monument) {
 function showMapMonumentDetails(monumentId) {
     const monument = state.monuments.find(m => m.id === monumentId);
     if (!monument) return;
+    
+    closeAllModals();
     
     const isScanned = state.scannedMonuments.some(m => m.id === monument.id);
     
@@ -908,7 +966,17 @@ function updateMonumentsList() {
     state.monuments.forEach(monument => {
         const isScanned = state.scannedMonuments.some(m => m.id === monument.id);
         const monumentElement = document.createElement('div');
-        monumentElement.className = `monument-card ${isScanned ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200'} p-4 rounded-xl border`;
+        monumentElement.className = `monument-card ${isScanned ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200'} p-4 rounded-xl border cursor-pointer hover:shadow-md transition-all`;
+        
+        // Add click event to show monument details
+        monumentElement.addEventListener('click', () => {
+            if (isScanned) {
+                showMonumentDetails(monument);
+            } else {
+                showMapMonumentDetails(monument.id);
+            }
+        });
+        
         monumentElement.innerHTML = `
             <div class="flex items-center">
                 <img src="${isScanned ? monument.image : 'imagens/placeholder.jpg'}" 
@@ -926,6 +994,7 @@ function updateMonumentsList() {
                     <div class="text-xs mt-1 font-bold ${isScanned ? 'text-green-600' : 'text-gray-400'}">
                         ${isScanned ? monument.points + ' pts' : '?'}
                     </div>
+                    ${!isScanned ? '<div class="text-xs text-blue-600 mt-1">Ver no mapa</div>' : ''}
                 </div>
             </div>
         `;
@@ -979,6 +1048,7 @@ logoutBtn.addEventListener('click', logout);
 
 startScannerBtn.addEventListener('click', startScanner);
 closeResultBtn.addEventListener('click', closeResult);
+closeScannerBtn.addEventListener('click', closeScanner);
 navScanner.addEventListener('click', showScannerView);
 navProfile.addEventListener('click', showProfileView);
 navMap.addEventListener('click', showMapView);
